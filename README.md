@@ -36,3 +36,46 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+
+
+
+{isLoading && (
+          <>
+            <ListingLoader />
+            <ListingLoader />
+            <ListingLoader />
+          </>
+        )}
+        {isSuccess &&
+          data?.pages.map((page) => (
+            <Fragment key={uuid()}>
+              {page?.estates.map((estate: ESTATE) => (
+                <ListingCard
+                  key={estate._id}
+                  title={estate.title}
+                  price={estate.price}
+                  date={`${new Date(estate.updatedAt).getDay()} ${new Date(
+                    estate.updatedAt
+                  ).toLocaleString("default", { month: "short" })} ${new Date(
+                    estate.updatedAt
+                  ).getFullYear()}`}
+                  city={estate.city}
+                  image={
+                    estate.images[
+                      0 ?? Math.floor(Math.random() * estate.images.length)
+                    ]
+                  }
+                  _id={estate._id}
+                />
+              ))}
+            </Fragment>
+          ))}
+        {isFetchingNextPage ? (
+          <div className="w-full h-fit flex justify-center">
+            <CompassLoader />
+          </div>
+        ) : (
+          <></>
+        )}
+        <div id="listing@observer" ref={listingsObserver.ref}></div>
