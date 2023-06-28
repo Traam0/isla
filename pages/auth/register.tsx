@@ -13,6 +13,9 @@ import { GetStaticProps, InferGetStaticPropsType } from "next";
 import { Select } from "~/components";
 import { motion } from "framer-motion";
 import { RegisterRequest, RegisterResponse } from "~/types/users";
+import "react-toastify/dist/ReactToastify.css";
+
+
 
 export const getStaticProps: GetStaticProps<{
 	countries: string[];
@@ -215,7 +218,7 @@ export default function Register({
 						</form>
 					</div>
 				</div>
-				<ReactQueryDevtools initialIsOpen={false} />
+				{/* <ReactQueryDevtools initialIsOpen={false} /> */}
 			</main>
 		</>
 	);

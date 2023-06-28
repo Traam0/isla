@@ -31,7 +31,7 @@ export default function App({
 					</PersistGate>
 				</Provider>
 
-				<ReactQueryDevtools initialIsOpen={false} />
+				{/* <ReactQueryDevtools initialIsOpen={false} /> */}
 			</Hydrate>
 		</QueryClientProvider>
 	);

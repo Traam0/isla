@@ -1,3 +1,4 @@
+import { getCookie } from "cookies-next";
 import { NextApiRequest, NextApiResponse } from "next";
 import { BadRequestError } from "~/errors";
 import { User } from "~/models";
@@ -9,29 +10,41 @@ export async function find(
 ): Promise<void> {
 	if (!req.query.search) throw BadRequestError(res, "seacrh query is required");
 
-	const patterns: Array<string> = [];
-	const regexdPatterns: Array<string> = [];
-	req.query.search = Array.from(new Set(req.query.search)).join("");
+	// const patterns: Array<string> = [];
+	// const regexdPatterns: Array<string> = [];
+	const queryKeys = Array.from(new Set(req.query.search)).join("");
 
-	for (let i = 0; i < req.query.search.length; i++) {
-		const substring: string = req.query.search.slice(0, i + 1) as string;
-		patterns.push(substring);
+	// for (let i = 0; i < req.query.search.length; i++) {
+	// 	const substring: string = req.query.search.slice(0, i + 1) as string;
+	// 	patterns.push(substring);
+	// }
+
+	// for (let i = 0; i < patterns.length; i++) {
+	// 	const patternArray = patterns[i].split("");
+	// 	var re = "(\\w*";
+	// 	for (let j = 0; j < patternArray.length; j++) {
+	// 		re += `${patternArray[j]}\\w*`;
+	// 	}
+	// 	re += ")";
+
+	// 	regexdPatterns.push(re);
+	// }
+	// const regex = regexdPatterns.join("|");
+
+	var regex = "(\\w*";
+
+	for (let i = 0; i < queryKeys.length; i++) {
+		regex += `${queryKeys[i]}\\w*`;
 	}
-
-	for (let i = 0; i < patterns.length; i++) {
-		const patternArray = patterns[i].split("");
-		var re = "(\\w*";
-		for (let j = 0; j < patternArray.length; j++) {
-			re += `${patternArray[j]}\\w*`;
-		}
-		re += ")";
-
-		regexdPatterns.push(re);
-	}
-
-	// console.log(regexdPatterns);
-	const regex = regexdPatterns.join("|");
+	regex += ")";
 	const matcher = new RegExp(regex, "gi");
+	console.log("=====================")
+	console.log(req.cookies);
+	console.log("=====================")
+	console.log(req.headers.cookie);
+	console.log("=====================")
+	console.log(getCookie("ATS", { req, res }));
+	console.log("=====================")
 
 	console.log(matcher);
 	const users = await User.find(

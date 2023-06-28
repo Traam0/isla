@@ -145,6 +145,7 @@ function SideMenu(): JSX.Element {
 		e.preventDefault();
 		if (inputIsEmpty(value)) return router.reload();
 		router.push(`/search?search=${value}`);
+		dispatch(addToLocalHistory({ id: uuid(), value }));
 		return setValue("");
 	}
 
@@ -208,7 +209,7 @@ function SideMenu(): JSX.Element {
 				/>
 			</form>
 			<div className="min-h-[300px] bg-background-500	 drop-shadow-lg rounded-lg px-3 py-2.5">
-				<header className="font-bold text-2xl text-dark-400">
+				<header className="font-bold text-2xl text-dark-400 pb-4">
 					Recently Searched.
 				</header>
 

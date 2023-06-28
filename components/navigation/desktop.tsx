@@ -12,6 +12,7 @@ import {
 	TablerIconsProps,
 } from "@tabler/icons-react";
 import Link from "next/link";
+import { toast } from "react-toastify";
 import { useSession } from "~/hooks";
 
 interface DesktopNavigationProps {
@@ -31,21 +32,21 @@ const navigationItems: NavigationItem[] = [
 		icon: IconNotification,
 		uri: "/notifications",
 		label: "notifications",
-		disabled: false,
+		disabled: true,
 	},
-	{ icon: IconMessage, uri: "/messages", label: "messages", disabled: false },
+	// { icon: IconMessage, uri: "/messages", label: "messages", disabled: true },
 	{ icon: IconBookmark, uri: "/saved", label: "BookMarks", disabled: false },
 	{ icon: IconPhoto, uri: "/Gallery", label: "gallery", disabled: false },
 ];
 
 const subNavigationItems: NavigationItem[] = [
-	{ icon: IconSettings, uri: "/settings", label: "settings", disabled: false },
+	// { icon: IconSettings, uri: "/settings", label: "settings", disabled: false },
 	{ icon: IconUser, uri: "/profile", label: "Profile", disabled: false },
 	{
 		icon: IconLogout2,
 		uri: "/api/auth/logout",
 		label: "logout",
-		disabled: false,
+		disabled: true,
 	},
 ];
 
@@ -57,13 +58,33 @@ export function DesktopNavigation({}: DesktopNavigationProps): JSX.Element {
 				<div className="flex flex-col items-start justify-start gap-3 text-2xl">
 					{navigationItems.map((item, index) => (
 						<div className="px-8 " key={index}>
-							<Link
-								href={item.uri}
-								className="flex gap-2 py-2 px-4 items-center group justify-start font-medium capitalize hover:bg-primary-500 rounded-xl"
-							>
-								<item.icon stroke={1.25} size={36} className="group-hover:text-accent-500"/>
-								{item.label}
-							</Link>
+							{item.disabled ? (
+								<div
+									onClick={(e) => {
+										toast.warn("Account level too low");
+									}}
+									className="flex gap-2 cursor-pointer py-2 px-4 items-center group justify-start font-medium capitalize hover:bg-primary-500 rounded-xl"
+								>
+									<item.icon
+										stroke={1.25}
+										size={36}
+										className="group-hover:text-accent-500"
+									/>
+									{item.label}
+								</div>
+							) : (
+								<Link
+									href={item.uri}
+									className="flex gap-2 py-2 px-4 items-center group justify-start font-medium capitalize hover:bg-primary-500 rounded-xl"
+								>
+									<item.icon
+										stroke={1.25}
+										size={36}
+										className="group-hover:text-accent-500"
+									/>
+									{item.label}
+								</Link>
+							)}
 						</div>
 					))}
 				</div>

@@ -7,7 +7,7 @@ const ConversationSchema = new Schema(
 			required: true,
 		},
 		sender: {
-			type: Schema.Types.Array,
+			type: Schema.Types.String,
 			trim: true,
 			required: true,
 		},

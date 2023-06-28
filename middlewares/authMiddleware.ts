@@ -1,17 +1,20 @@
 /** @format */
 
 import { UnAuthenticatedError, UnAuthorizedError } from "~/errors";
-import { NextApiResponse } from "next";
+import { NextApiRequest, NextApiResponse } from "next";
 import jswt from "jsonwebtoken";
 import { Session } from "~/models";
 import { attachCookies, signToken } from "~/utils";
+import { getCookie, getCookies } from "cookies-next";
 
 export async function authenticateUser(
 	req: any,
 	res: NextApiResponse,
 	next: any
 ) {
-	const { ATS } = req.cookies;
+	const { ATS } = req.cookies || getCookie("ATS");
+
+	console.log(ATS)
 
 	if (!ATS) {
 		return UnAuthenticatedError(res, "Not Authenticated");
@@ -48,7 +51,7 @@ export async function authenticateUser(
 			});
 
 			if (!refresh) throw UnAuthenticatedError(res, "Session Expired");
-			
+
 			jswt.verify(
 				refresh.RTS,
 				secret,

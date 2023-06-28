@@ -16,6 +16,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { LoginResponse } from "~/types/users";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Login(): JSX.Element {
 	const [passwordVisibility, togglePasswordVisiblity] = useToggle(false);
@@ -171,7 +172,7 @@ export default function Login(): JSX.Element {
 						</form>
 					</div>
 				</div>
-				<ReactQueryDevtools initialIsOpen={false} />
+				{/* <ReactQueryDevtools initialIsOpen={false} /> */}
 			</main>
 		</>
 	);

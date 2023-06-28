@@ -1,5 +1,5 @@
 import axios, { AxiosError } from "axios";
-import { GetServerSideProps } from "next";
+import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { useSession } from "~/hooks/";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -12,9 +12,16 @@ import { inputIsEmpty } from "~/utils/helpers";
 import Image from "next/image";
 import { format, parseISO } from "date-fns";
 import Link from "next/link";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
+import { v4 as uuid } from "uuid";
+import { TideWave } from "~/components";
+import { addToLocalHistory } from "~/reducers/appSlice";
+import { useDispatch } from "react-redux";
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
+export const getServerSideProps: GetServerSideProps<{
+	searchResults: { users: User[]; tides: Tide[] };
+}> = async (ctx) => {
+	ctx.req.cookies;
 	if (!ctx.query.search || inputIsEmpty(ctx.query.search)) {
 		return {
 			redirect: {
@@ -24,11 +31,22 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 		};
 	}
 
+	// axios.get("http://localhost:3000/api/hello", {
+	// 	withCredentials: true,
+	// 	headers: {
+	// 		Cookie: ctx.req.headers.cookie,
+	// 		test: "sasa",
+	// 	},
+	// });
+
 	const response = await axios
 		.get<SearchResponse>(
 			`http://localhost:3000/api/users/find?search=${ctx.query.search}`,
 			{
 				withCredentials: true,
+				headers: {
+					Cookie: ctx.req.headers.cookie,
+				},
 			}
 		)
 		.catch((error: AxiosError<{ message: string }>) => {
@@ -53,7 +71,10 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 	};
 };
 
-export default function SearchPage({ searchResults }: any) {
+export default function SearchPage({
+	searchResults,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+	const dispatch = useDispatch();
 	const { data: session } = useSession();
 	const router = useRouter();
 	const current = useQueryClient().getQueryData<User>(["me", "current"]);
@@ -73,12 +94,14 @@ export default function SearchPage({ searchResults }: any) {
 	return (
 		<AppLayout>
 			<main className="flex h-screen  overflow-y-scroll w-full relative ">
-				<div className="w-[650px] h-full bg-white px-4 flex flex-col gap-6 pt-6">
+				<div className="w-[650px] divide-y-4 h-screen overflow-hidden overflow-y-scroll scrollbar-thin bg-white px-4 flex flex-col gap-6 relative">
 					<form
+						className="sticky bg-white  pt-6 top-0"
 						onSubmit={(ev) => {
 							ev.preventDefault();
 							if (inputIsEmpty(value)) return router.reload();
 							router.push(`/search?search=${value}`);
+							dispatch(addToLocalHistory({ id: uuid(), value }));
 							return setValue("");
 						}}
 					>
@@ -92,7 +115,9 @@ export default function SearchPage({ searchResults }: any) {
 					</form>
 
 					<section className="overflow-x-hiddsen flex flex-col gap-1 whitespace-pre-wrap w-full break-words">
-						<h1>People</h1>
+						<h1 className="text-3xl font-semibold font-serif tracking-wide py-2">
+							People
+						</h1>
 						{searchResults.users.map((user) => (
 							<div
 								key={user._id}
@@ -107,7 +132,7 @@ export default function SearchPage({ searchResults }: any) {
 										height={60}
 									/>
 								</div>
-								<div className="px-1 w-full max-w-full flex flex-row justify-between px-2 text-base">
+								<div className="px-1 w-full max-w-full flex flex-row justify-between items-center px-2 text-base">
 									<div>
 										<span className="text-lg font-semibold">
 											<Link
@@ -129,7 +154,9 @@ export default function SearchPage({ searchResults }: any) {
 									) : current?.connections.following.some(
 											(f) => f === user._id
 									  ) ? (
-										<button>unfollow</button>
+										<button className="rounded-lg px-6 py-2 hover:ring ring-red-500 border border-solid hover:ring-offset-2 hover:bg-red-500/40 hover:text-white ring-offset-2 hover:bg-red-500/40 hover:text-white hover:ring-offset-2 focus:bg-red-500/40 focus:text-whitefocus:ring-offset-2 focus:outline-none  focus:bg-red-500/40 focus:text-white duration-75 focus:ring capitalize font-medium text-base">
+											unfollow
+										</button>
 									) : (
 										<button>follow</button>
 									)}
@@ -137,8 +164,16 @@ export default function SearchPage({ searchResults }: any) {
 							</div>
 						))}
 					</section>
+					<section className="overflow-x-hiddsen flex flex-col gap-1 whitespace-pre-wrap w-full break-words">
+						<h1 className="text-3xl font-semibold font-serif tracking-wide py-2">
+							Tides
+						</h1>
+						{searchResults.tides.map((tide) => (
+							<TideWave {...tide} />
+						))}
+					</section>
 				</div>
-				<aside>aside</aside>
+				{/* <aside>aside</aside> */}
 			</main>
 		</AppLayout>
 	);

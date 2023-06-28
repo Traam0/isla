@@ -42,7 +42,7 @@ export function AppLayout({ children }: AppLayoutProps): JSX.Element {
 					{/* </div> */}
 					<Toaster autoClose={1500} />
 				</main>
-				{/* <ReactQueryDevtools initialIsOpen={false} position="bottom-right" /> */}
+				<ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
 			</>
 		</>
 	);
